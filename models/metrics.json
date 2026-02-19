@@ -1,0 +1,50 @@
+{
+  "cost_model": {
+    "rmse": 0.06712395256070375,
+    "mae": 0.018651435887279657,
+    "r2": 0.9999951186875297
+  },
+  "co2_model": {
+    "rmse": 2.1347926964019033,
+    "mae": 0.4225316097552323,
+    "r2": 0.9989636236476683
+  },
+  "pkg_classifier": {
+    "accuracy": 0.9503333333333334
+  },
+  "features": [
+    "Weight_kg",
+    "Volumetric_Weight_kg",
+    "Distance_km",
+    "Fragility",
+    "Moisture_Sens",
+    "volume_cm3",
+    "dimensional_weight_ratio",
+    "Category_encoded",
+    "Shipping_Mode_encoded",
+    "month"
+  ],
+  "packaging_classes": [
+    "Bubble Wrap (LDPE)",
+    "Cornstarch Foam",
+    "Corrugated Cardboard",
+    "Honeycomb Paper",
+    "Kraft Paper Mailer",
+    "Mushroom Pkg (Mycelium)",
+    "PLA Bioplastic",
+    "Recycled PET Box",
+    "Styrofoam (EPS)",
+    "Wood Crate"
+  ],
+  "category_classes": [
+    "Beauty",
+    "Clothing",
+    "Electronics",
+    "Furniture",
+    "Home Decor"
+  ],
+  "shipping_classes": [
+    "Air",
+    "Road"
+  ]
+}

@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+ENV/
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Environment
+.env
+*.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Data files (large originals — not committed)
+data/materials_database_600.xlsx
+data/real_packaging_history.xlsx
+data/history_cleaned.csv
+data/history_features.csv
+
+# Models (large binary files)
+# models/*.pkl  ← Uncomment if you want to exclude models from git
+# Use Git LFS instead:  git lfs track "*.pkl"
+
+# Logs
+*.log
+logs/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# OS
+.DS_Store
+desktop.ini
+
+# Test cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Node (for docs generation only)
+node_modules/
+*.js.map

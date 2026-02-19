@@ -1,0 +1,50 @@
+EcoPackAI – ML Model Evaluation Report
+=======================================================
+
+COST PREDICTION MODEL (Random Forest Regressor)
+  Training samples : 12,000
+  Test samples     : 3,000
+  RMSE             : 0.0671
+  MAE              : 0.0187
+  R² Score         : 1.0000
+
+CO₂ PREDICTION MODEL (Random Forest Regressor)
+  Training samples : 12,000
+  Test samples     : 3,000
+  RMSE             : 2.1348
+  MAE              : 0.4225
+  R² Score         : 0.9990
+
+PACKAGING CLASSIFIER (Random Forest Classifier)
+  Training samples : 12,000
+  Test samples     : 3,000
+  Accuracy         : 0.9503 (95.0%)
+
+PACKAGING CLASSES:
+  [0] Bubble Wrap (LDPE)
+  [1] Cornstarch Foam
+  [2] Corrugated Cardboard
+  [3] Honeycomb Paper
+  [4] Kraft Paper Mailer
+  [5] Mushroom Pkg (Mycelium)
+  [6] PLA Bioplastic
+  [7] Recycled PET Box
+  [8] Styrofoam (EPS)
+  [9] Wood Crate
+
+                         precision    recall  f1-score   support
+
+     Bubble Wrap (LDPE)       0.00      0.00      0.00        22
+        Cornstarch Foam       0.00      0.00      0.00        16
+   Corrugated Cardboard       0.93      0.78      0.85        85
+        Honeycomb Paper       0.95      0.96      0.95       352
+     Kraft Paper Mailer       0.94      0.98      0.96       648
+Mushroom Pkg (Mycelium)       0.96      0.99      0.97      1141
+         PLA Bioplastic       0.96      0.96      0.96       225
+       Recycled PET Box       0.00      0.00      0.00        13
+        Styrofoam (EPS)       0.00      0.00      0.00        21
+             Wood Crate       0.95      0.97      0.96       477
+
+               accuracy                           0.95      3000
+              macro avg       0.57      0.56      0.57      3000
+           weighted avg       0.93      0.95      0.94      3000

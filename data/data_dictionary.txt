@@ -1,0 +1,28 @@
+
+TABLE: materials
+=======================================================
+  Material_ID                    INTEGER – Unique material identifier
+  Material_Name                  VARCHAR – Name of packaging material
+  Category                       VARCHAR – Eco / Paper / Plastic / Wood / Metal / Glass
+  Density_kg_m3                  NUMERIC – Material density in kg/m³
+  Tensile_Strength_MPa           NUMERIC – Tensile strength in megapascals
+  CO2_Emission_kg                NUMERIC – CO₂ emitted per kg of material produced
+  Cost_per_kg                    NUMERIC – Cost in USD per kilogram
+  Biodegradable                  VARCHAR – Yes / No
+
+TABLE: packaging_history
+=======================================================
+  Order_ID                       INTEGER – Unique order identifier
+  Date                           DATE – Order date
+  Item_Name                      VARCHAR – Product name
+  Category                       VARCHAR – Electronics / Clothing / Furniture / Beauty / Home Decor
+  Weight_kg                      NUMERIC – Actual product weight in kg
+  Volumetric_Weight_kg           NUMERIC – Calculated volumetric weight
+  L_cm / W_cm / H_cm             NUMERIC – Package dimensions in cm
+  Fragility                      INTEGER – Fragility score (scale)
+  Moisture_Sens                  BOOLEAN – Moisture sensitive flag
+  Shipping_Mode                  VARCHAR – Air / Road
+  Distance_km                    INTEGER – Shipping distance in km
+  Packaging_Used                 VARCHAR – Actual packaging material used
+  Cost_USD                       NUMERIC – Packaging cost in USD
+  CO2_Emission_kg                NUMERIC – CO₂ emitted for shipment

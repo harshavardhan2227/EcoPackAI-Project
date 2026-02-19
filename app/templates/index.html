@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EcoPackAI – Sustainable Packaging Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --forest:  #0f4c35;
+  --moss:    #1a7a52;
+  --sage:    #4ba57a;
+  --lime:    #a8e063;
+  --cream:   #f5f0e8;
+  --paper:   #faf8f3;
+  --ink:     #1a1a1a;
+  --muted:   #6b7280;
+  --border:  #e2ddd4;
+  --glass:   rgba(255,255,255,0.7);
+  --shadow:  0 4px 32px rgba(15,76,53,0.10);
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Background organic texture */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 10% 20%, rgba(168,224,99,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 90% 80%, rgba(15,76,53,0.06) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Nav */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem 2.5rem;
+  background: rgba(250,248,243,0.88);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-logo {
+  display: flex; align-items: center; gap: 0.6rem;
+  font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.4rem;
+  color: var(--forest);
+  text-decoration: none;
+}
+.nav-logo span {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--moss), var(--lime));
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+}
+.nav-links { display: flex; gap: 2rem; }
+.nav-links a {
+  font-size: 0.9rem; font-weight: 500; color: var(--muted);
+  text-decoration: none; transition: color 0.2s;
+}
+.nav-links a:hover, .nav-links a.active { color: var(--forest); }
+
+/* Hero */
+.hero {
+  position: relative; z-index: 1;
+  padding: 5rem 2.5rem 3rem;
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+}
+
+.hero-text h1 {
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: clamp(2.4rem, 5vw, 3.8rem); line-height: 1.1;
+  color: var(--forest); margin-bottom: 1.2rem;
+}
+.hero-text h1 em {
+  font-style: normal;
+  background: linear-gradient(90deg, var(--moss), var(--lime));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hero-text p {
+  font-size: 1.05rem; color: var(--muted); line-height: 1.7; margin-bottom: 2rem;
+}
+
+.hero-stats {
+  display: flex; gap: 2rem; flex-wrap: wrap;
+}
+.stat-pill {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 0.5rem 1.2rem;
+  font-size: 0.85rem; color: var(--forest); font-weight: 500;
+  backdrop-filter: blur(8px);
+  animation: fadeUp 0.6s ease both;
+}
+.stat-pill strong { font-weight: 700; }
+
+/* Floating badge */
+.hero-badge {
+  position: absolute; top: 5.5rem; right: 2.5rem;
+  background: linear-gradient(135deg, var(--forest), var(--moss));
+  color: white; border-radius: 16px; padding: 1.2rem 1.5rem;
+  font-size: 0.8rem; text-align: center; box-shadow: var(--shadow);
+  animation: float 4s ease-in-out infinite;
+}
+.hero-badge .big { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; display: block; }
+
+@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+/* Main layout */
+.main-layout {
+  position: relative; z-index: 1;
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: 420px 1fr; gap: 2rem;
+  padding: 0 2.5rem 4rem;
+}
+
+/* Form card */
+.form-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 2rem;
+  box-shadow: var(--shadow);
+  height: fit-content;
+  position: sticky; top: 80px;
+}
+
+.form-card h2 {
+  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.2rem;
+  color: var(--forest); margin-bottom: 1.5rem;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+
+.form-section { margin-bottom: 1.4rem; }
+.form-section label {
+  display: block; font-size: 0.8rem; font-weight: 500;
+  color: var(--muted); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.05em;
+}
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+
+input, select {
+  width: 100%; padding: 0.7rem 1rem;
+  border: 1.5px solid var(--border); border-radius: 12px;
+  font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: var(--ink);
+  background: var(--paper); transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+input:focus, select:focus {
+  border-color: var(--moss); box-shadow: 0 0 0 3px rgba(26,122,82,0.12);
+}
+
+.slider-group { display: flex; align-items: center; gap: 0.75rem; }
+input[type="range"] {
+  flex: 1; padding: 0; height: 4px; border: none;
+  accent-color: var(--moss); background: var(--border); border-radius: 2px;
+}
+.slider-val {
+  width: 32px; text-align: center; font-weight: 600;
+  color: var(--forest); font-size: 0.9rem;
+}
+
+.toggle-row {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--paper); border-radius: 12px; padding: 0.7rem 1rem;
+}
+.toggle-row span { font-size: 0.9rem; color: var(--ink); }
+.toggle {
+  width: 44px; height: 24px; border-radius: 12px; background: var(--border);
+  cursor: pointer; position: relative; transition: background 0.3s;
+  border: none; outline: none;
+}
+.toggle.on { background: var(--moss); }
+.toggle::after {
+  content: ''; position: absolute; top: 3px; left: 3px;
+  width: 18px; height: 18px; border-radius: 50%; background: white;
+  transition: left 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+.toggle.on::after { left: 23px; }
+
+.btn-predict {
+  width: 100%; padding: 1rem;
+  background: linear-gradient(135deg, var(--forest), var(--moss));
+  color: white; border: none; border-radius: 14px;
+  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem;
+  cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+  margin-top: 1rem;
+}
+.btn-predict:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(15,76,53,0.3); }
+.btn-predict:active { transform: translateY(0); }
+.btn-predict .spinner {
+  width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: white; border-radius: 50%;
+  animation: spin 0.8s linear infinite; display: none;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Results panel */
+.results-panel { display: flex; flex-direction: column; gap: 1.5rem; }
+
+.empty-state {
+  background: white; border: 1px dashed var(--border);
+  border-radius: 24px; padding: 4rem 2rem;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 1rem; text-align: center;
+}
+.empty-state .icon { font-size: 3rem; opacity: 0.5; }
+.empty-state p { color: var(--muted); font-size: 0.95rem; }
+
+/* Prediction summary */
+.pred-summary {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;
+  animation: fadeUp 0.4s ease both;
+}
+.pred-card {
+  background: white; border: 1px solid var(--border);
+  border-radius: 20px; padding: 1.4rem 1.2rem;
+  box-shadow: var(--shadow); text-align: center;
+}
+.pred-card .label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 0.3rem; }
+.pred-card .value { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; color: var(--forest); }
+.pred-card .sub { font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem; }
+.pred-card.highlight { background: linear-gradient(135deg, var(--forest), var(--moss)); border: none; }
+.pred-card.highlight .label, .pred-card.highlight .value, .pred-card.highlight .sub { color: white; }
+
+/* Recommendations */
+.rec-section h3 {
+  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.05rem;
+  color: var(--forest); margin-bottom: 1rem;
+}
+
+.rec-list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+.rec-card {
+  background: white; border: 1.5px solid var(--border);
+  border-radius: 18px; padding: 1.2rem 1.4rem;
+  display: grid; grid-template-columns: auto 1fr auto;
+  gap: 1rem; align-items: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  animation: fadeUp 0.4s ease both;
+  transition: border-color 0.2s, transform 0.2s;
+  cursor: pointer;
+}
+.rec-card:hover { border-color: var(--sage); transform: translateX(4px); }
+.rec-card.top { border-color: var(--lime); background: linear-gradient(135deg, rgba(168,224,99,0.05), white); }
+
+.rank-badge {
+  width: 40px; height: 40px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem;
+  background: var(--paper); color: var(--forest); border: 1.5px solid var(--border);
+}
+.rank-badge.gold { background: linear-gradient(135deg, #f59e0b, #fbbf24); color: white; border-color: transparent; }
+
+.rec-info .name { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.25rem; }
+.rec-info .tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.tag {
+  font-size: 0.72rem; padding: 0.2rem 0.6rem; border-radius: 100px;
+  font-weight: 500;
+}
+.tag.eco { background: rgba(168,224,99,0.2); color: var(--forest); }
+.tag.grade { background: var(--forest); color: white; }
+.tag.conf { background: rgba(75,165,122,0.15); color: var(--moss); }
+
+.rec-scores { text-align: right; }
+.rec-scores .score-row { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.2rem; }
+.rec-scores .score-row span { font-weight: 600; color: var(--forest); }
+
+/* Bar meter */
+.bar-meter {
+  width: 80px; height: 5px; background: var(--border); border-radius: 3px; display: inline-block;
+  position: relative; vertical-align: middle; margin-left: 0.3rem;
+}
+.bar-meter-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--sage), var(--lime)); }
+
+/* Material table */
+.mat-table-section { background: white; border: 1px solid var(--border); border-radius: 24px; padding: 1.5rem; box-shadow: var(--shadow); }
+.mat-table-section h3 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; color: var(--forest); margin-bottom: 1rem; }
+.mat-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+.mat-table th { background: var(--paper); padding: 0.6rem 0.8rem; text-align: left; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); border-bottom: 1px solid var(--border); }
+.mat-table td { padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--border); color: var(--ink); }
+.mat-table tr:last-child td { border-bottom: none; }
+.mat-table tr:hover td { background: var(--paper); }
+.grade-chip { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 6px; font-weight: 700; font-size: 0.78rem; }
+.grade-A { background: #dcfce7; color: #166534; }
+.grade-B { background: #dbeafe; color: #1e3a8a; }
+.grade-C { background: #fef9c3; color: #854d0e; }
+.grade-D { background: #fee2e2; color: #991b1b; }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Footer */
+footer {
+  position: relative; z-index: 1;
+  background: var(--forest); color: rgba(255,255,255,0.7);
+  padding: 2rem 2.5rem; text-align: center; font-size: 0.85rem;
+}
+footer strong { color: white; font-family: 'Syne', sans-serif; }
+
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; padding: 3rem 1.5rem 2rem; }
+  .main-layout { grid-template-columns: 1fr; padding: 0 1.5rem 3rem; }
+  .form-card { position: static; }
+  .pred-summary { grid-template-columns: 1fr 1fr; }
+  .hero-badge { display: none; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">
+    <span>🌿</span> EcoPackAI
+  </a>
+  <div class="nav-links">
+    <a href="/" class="active">Recommend</a>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/api/materials" target="_blank">Materials API</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-text">
+    <h1>Smarter Packaging,<br><em>Greener Planet</em></h1>
+    <p>AI-powered recommendations from 600 real materials and 15,000 shipping orders — optimised for sustainability and cost.</p>
+    <div class="hero-stats">
+      <div class="stat-pill">📦 <strong id="stat-mats">600</strong> Materials</div>
+      <div class="stat-pill">🚚 <strong id="stat-orders">15,000</strong> Real Orders</div>
+      <div class="stat-pill">🎯 <strong id="stat-acc">95%</strong> Model Accuracy</div>
+    </div>
+  </div>
+</section>
+
+<div class="main-layout">
+
+  <!-- Form -->
+  <div class="form-card">
+    <h2>🔍 Product Parameters</h2>
+
+    <div class="form-section">
+      <label>Product Category</label>
+      <select id="category">
+        <option value="Clothing">Clothing</option>
+        <option value="Electronics">Electronics</option>
+        <option value="Furniture">Furniture</option>
+        <option value="Beauty">Beauty</option>
+        <option value="Home Decor">Home Decor</option>
+      </select>
+    </div>
+
+    <div class="form-section">
+      <label>Shipping Mode</label>
+      <select id="shipping_mode">
+        <option value="Air">Air</option>
+        <option value="Road">Road</option>
+      </select>
+    </div>
+
+    <div class="form-section">
+      <label>Dimensions (cm)</label>
+      <div class="form-row">
+        <input type="number" id="length_cm" placeholder="Length" value="30" min="1">
+        <input type="number" id="width_cm" placeholder="Width" value="20" min="1">
+      </div>
+      <div style="margin-top:0.75rem">
+        <input type="number" id="height_cm" placeholder="Height" value="15" min="1">
+      </div>
+    </div>
+
+    <div class="form-section">
+      <label>Weight (kg)</label>
+      <input type="number" id="weight_kg" placeholder="e.g. 1.5" value="1.5" step="0.1" min="0.1">
+    </div>
+
+    <div class="form-section">
+      <label>Distance (km)</label>
+      <input type="number" id="distance_km" placeholder="e.g. 800" value="800" min="1">
+    </div>
+
+    <div class="form-section">
+      <label>Fragility  <span class="slider-val" id="fragility-val">5</span> / 10</label>
+      <div class="slider-group">
+        <input type="range" id="fragility" min="1" max="10" value="5"
+               oninput="document.getElementById('fragility-val').textContent=this.value">
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="toggle-row">
+        <span>Moisture Sensitive</span>
+        <button class="toggle" id="moisture-toggle" onclick="toggleMoisture(this)"></button>
+      </div>
+    </div>
+
+    <button class="btn-predict" onclick="runPrediction()">
+      <div class="spinner" id="spinner"></div>
+      <span id="btn-text">🌿 Get AI Recommendation</span>
+    </button>
+  </div>
+
+  <!-- Results -->
+  <div class="results-panel" id="results-panel">
+    <div class="empty-state" id="empty-state">
+      <div class="icon">🌱</div>
+      <p>Fill in your product details and click<br><strong>Get AI Recommendation</strong> to see optimal packaging options.</p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <strong>EcoPackAI</strong> — Powered by Random Forest & XGBoost · 600 Materials · 15,000 Real Orders · R² 0.999
+</footer>
+
+<script>
+let moistureVal = 0;
+
+function toggleMoisture(btn) {
+  btn.classList.toggle('on');
+  moistureVal = btn.classList.contains('on') ? 1 : 0;
+}
+
+async function runPrediction() {
+  const spinner = document.getElementById('spinner');
+  const btnText = document.getElementById('btn-text');
+  spinner.style.display = 'block';
+  btnText.textContent = 'Analysing...';
+
+  const payload = {
+    category:          document.getElementById('category').value,
+    shipping_mode:     document.getElementById('shipping_mode').value,
+    weight_kg:         parseFloat(document.getElementById('weight_kg').value),
+    distance_km:       parseInt(document.getElementById('distance_km').value),
+    length_cm:         parseFloat(document.getElementById('length_cm').value),
+    width_cm:          parseFloat(document.getElementById('width_cm').value),
+    height_cm:         parseFloat(document.getElementById('height_cm').value),
+    fragility:         parseInt(document.getElementById('fragility').value),
+    moisture_sensitive: moistureVal,
+  };
+
+  try {
+    const res  = await fetch('/api/recommend', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (data.success) renderResults(data);
+    else alert('Error: ' + data.error);
+  } catch(e) {
+    alert('Connection error: ' + e.message);
+  }
+
+  spinner.style.display = 'none';
+  btnText.textContent = '🌿 Get AI Recommendation';
+}
+
+function renderResults(data) {
+  const panel = document.getElementById('results-panel');
+
+  const gradeColors = { A:'#22c55e', B:'#3b82f6', C:'#f59e0b', D:'#ef4444' };
+
+  panel.innerHTML = `
+    <!-- Prediction Summary -->
+    <div class="pred-summary">
+      <div class="pred-card highlight">
+        <div class="label">Predicted Cost</div>
+        <div class="value">$${data.predicted_cost_usd.toFixed(2)}</div>
+        <div class="sub">packaging only</div>
+      </div>
+      <div class="pred-card">
+        <div class="label">CO₂ Emission</div>
+        <div class="value">${data.predicted_co2_kg.toFixed(2)}</div>
+        <div class="sub">kg CO₂ equivalent</div>
+      </div>
+      <div class="pred-card">
+        <div class="label">CO₂ Saving</div>
+        <div class="value">${data.co2_saving_pct}%</div>
+        <div class="sub">vs 90th percentile</div>
+      </div>
+    </div>
+
+    <!-- Recommendations -->
+    <div class="rec-section">
+      <h3>🏆 Top Packaging Recommendations</h3>
+      <div class="rec-list">
+        ${data.recommendations.map((r, i) => `
+          <div class="rec-card ${i===0?'top':''}">
+            <div class="rank-badge ${i===0?'gold':''}">${r.rank}</div>
+            <div class="rec-info">
+              <div class="name">${r.packaging}</div>
+              <div class="tags">
+                <span class="tag grade" style="background:${gradeColors[r.eco_grade]}">Grade ${r.eco_grade}</span>
+                <span class="tag conf">${r.confidence}% confidence</span>
+                <span class="tag eco">Suitability ${(r.suitability_score*100).toFixed(0)}%</span>
+              </div>
+            </div>
+            <div class="rec-scores">
+              <div class="score-row">CO₂ Index <span>${(r.co2_impact_index*100).toFixed(0)}%</span>
+                <span class="bar-meter"><span class="bar-meter-fill" style="width:${r.co2_impact_index*100}%"></span></span>
+              </div>
+              <div class="score-row">Cost Eff. <span>${(r.cost_efficiency_index*100).toFixed(0)}%</span>
+                <span class="bar-meter"><span class="bar-meter-fill" style="width:${r.cost_efficiency_index*100}%"></span></span>
+              </div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- Model confidence -->
+    <div class="mat-table-section">
+      <h3>🤖 Model Performance Metrics</h3>
+      <table class="mat-table">
+        <thead><tr><th>Model</th><th>Purpose</th><th>Score</th></tr></thead>
+        <tbody>
+          <tr><td>Random Forest (Cost)</td><td>Predict packaging cost</td><td><strong>R² ${data.model_metrics.cost_r2}</strong></td></tr>
+          <tr><td>Random Forest (CO₂)</td><td>Predict carbon emissions</td><td><strong>R² ${data.model_metrics.co2_r2}</strong></td></tr>
+          <tr><td>RF Classifier (Packaging)</td><td>Recommend material type</td><td><strong>${(data.model_metrics.pkg_accuracy*100).toFixed(1)}% accuracy</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+// Load live stats on page load
+fetch('/api/stats').then(r=>r.json()).then(d => {
+  document.getElementById('stat-mats').textContent   = d.total_materials.toLocaleString();
+  document.getElementById('stat-orders').textContent = d.total_orders.toLocaleString();
+  document.getElementById('stat-acc').textContent    = d.model_accuracy_pct + '%';
+}).catch(()=>{});
+</script>
+</body>
+</html>

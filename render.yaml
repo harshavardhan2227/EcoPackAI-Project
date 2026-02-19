@@ -1,0 +1,43 @@
+services:
+  - type: web
+    name: ecopackai
+    runtime: python
+    buildCommand: |
+      pip install -r requirements.txt &&
+      python scripts/module1_data_collection.py &&
+      python scripts/module2_feature_engineering.py &&
+      python scripts/module3_ml_training.py &&
+      python scripts/module7_bi_dashboard.py
+    startCommand: gunicorn --chdir app app:app --workers 2 --timeout 120
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: FLASK_SECRET_KEY
+        generateValue: true
+      - key: DB_HOST
+        fromDatabase:
+          name: ecopackai-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: ecopackai-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: ecopackai-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: ecopackai-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: ecopackai-db
+          property: password
+    healthCheckPath: /api/stats
+
+databases:
+  - name: ecopackai-db
+    databaseName: ecopackai
+    user: ecopackai
+    plan: free

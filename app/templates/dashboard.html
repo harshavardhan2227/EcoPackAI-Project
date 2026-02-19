@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EcoPackAI – BI Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --forest: #0f4c35; --moss: #1a7a52; --sage: #4ba57a; --lime: #a8e063;
+  --cream: #f5f0e8; --paper: #faf8f3; --ink: #1a1a1a; --muted: #6b7280;
+  --border: #e2ddd4; --shadow: 0 4px 32px rgba(15,76,53,0.10);
+  --red: #ef4444; --amber: #f59e0b; --blue: #3b82f6;
+}
+body { font-family: 'DM Sans', sans-serif; background: var(--paper); color: var(--ink); min-height: 100vh; }
+body::before {
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background: radial-gradient(ellipse 70% 50% at 5% 10%, rgba(168,224,99,0.07) 0%, transparent 60%),
+              radial-gradient(ellipse 50% 70% at 95% 90%, rgba(15,76,53,0.05) 0%, transparent 60%);
+}
+
+nav {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem 2.5rem;
+  background: rgba(250,248,243,0.9); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo { display: flex; align-items: center; gap: 0.6rem; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.4rem; color: var(--forest); text-decoration: none; }
+.nav-logo span { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, var(--moss), var(--lime)); display: inline-flex; align-items: center; justify-content: center; font-size: 1rem; }
+.nav-links { display: flex; gap: 2rem; }
+.nav-links a { font-size: 0.9rem; font-weight: 500; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+.nav-links a:hover, .nav-links a.active { color: var(--forest); }
+
+.dash-header { position: relative; z-index: 1; padding: 2.5rem 2.5rem 1.5rem; max-width: 1400px; margin: 0 auto; }
+.dash-header h1 { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: var(--forest); margin-bottom: 0.3rem; }
+.dash-header p { color: var(--muted); font-size: 0.95rem; }
+.live-badge { display: inline-flex; align-items: center; gap: 0.4rem; background: rgba(168,224,99,0.15); color: var(--forest); font-size: 0.78rem; font-weight: 600; padding: 0.3rem 0.8rem; border-radius: 100px; border: 1px solid rgba(168,224,99,0.4); margin-top: 0.5rem; }
+.live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--sage); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+.kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; max-width: 1400px; margin: 0 auto; padding: 0 2.5rem 1.5rem; position: relative; z-index: 1; }
+.kpi-card { background: white; border: 1px solid var(--border); border-radius: 20px; padding: 1.4rem; box-shadow: var(--shadow); position: relative; overflow: hidden; }
+.kpi-card::after { content: ''; position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; border-radius: 50%; opacity: 0.07; }
+.kpi-card.green::after { background: var(--lime); }
+.kpi-card.blue::after { background: var(--blue); }
+.kpi-card.amber::after { background: var(--amber); }
+.kpi-card.red::after { background: var(--red); }
+.kpi-icon { font-size: 1.4rem; margin-bottom: 0.5rem; }
+.kpi-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 0.3rem; }
+.kpi-value { font-family: 'Syne', sans-serif; font-size: 1.9rem; font-weight: 800; color: var(--forest); }
+.kpi-sub { font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem; }
+.kpi-badge { display: inline-block; font-size: 0.72rem; padding: 0.15rem 0.5rem; border-radius: 100px; font-weight: 600; margin-top: 0.3rem; }
+.badge-green { background: #dcfce7; color: #166534; }
+.badge-amber { background: #fef9c3; color: #854d0e; }
+
+.charts-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; max-width: 1400px; margin: 0 auto; padding: 0 2.5rem; position: relative; z-index: 1; margin-bottom: 1.5rem; }
+.charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; max-width: 1400px; margin: 0 auto; padding: 0 2.5rem; position: relative; z-index: 1; margin-bottom: 1.5rem; }
+.chart-card { background: white; border: 1px solid var(--border); border-radius: 24px; padding: 1.5rem; box-shadow: var(--shadow); }
+.chart-card h3 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; color: var(--forest); margin-bottom: 0.3rem; }
+.chart-card p { font-size: 0.78rem; color: var(--muted); margin-bottom: 1.2rem; }
+.chart-wrap { position: relative; height: 240px; }
+.chart-wrap.tall { height: 300px; }
+
+.bottom-section { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; max-width: 1400px; margin: 0 auto; padding: 0 2.5rem 3rem; position: relative; z-index: 1; }
+.table-card { background: white; border: 1px solid var(--border); border-radius: 24px; padding: 1.5rem; box-shadow: var(--shadow); }
+.table-card h3 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; color: var(--forest); margin-bottom: 1rem; }
+.eco-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+.eco-table th { background: var(--paper); padding: 0.55rem 0.8rem; text-align: left; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); border-bottom: 1px solid var(--border); }
+.eco-table td { padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--border); }
+.eco-table tr:last-child td { border-bottom: none; }
+.eco-table tr:hover td { background: var(--paper); }
+.grade-chip { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 6px; font-weight: 700; font-size: 0.75rem; }
+.grade-A { background: #dcfce7; color: #166534; }
+.grade-B { background: #dbeafe; color: #1e3a8a; }
+.grade-C { background: #fef9c3; color: #854d0e; }
+.grade-D { background: #fee2e2; color: #991b1b; }
+
+.progress-bar { width: 100%; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--sage), var(--lime)); transition: width 1s ease; }
+
+footer { background: var(--forest); color: rgba(255,255,255,0.7); padding: 1.5rem 2.5rem; text-align: center; font-size: 0.85rem; }
+footer strong { color: white; font-family: 'Syne', sans-serif; }
+
+.loading { display: flex; align-items: center; justify-content: center; height: 200px; color: var(--muted); font-size: 0.9rem; }
+
+@media (max-width: 1100px) {
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .charts-grid, .charts-row, .bottom-section { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo"><span>🌿</span> EcoPackAI</a>
+  <div class="nav-links">
+    <a href="/">Recommend</a>
+    <a href="/dashboard" class="active">Dashboard</a>
+    <a href="/api/materials" target="_blank">Materials API</a>
+  </div>
+</nav>
+
+<div class="dash-header">
+  <h1>📊 Sustainability BI Dashboard</h1>
+  <p>Real-time analytics from 15,000 shipping orders and 600 packaging materials</p>
+  <div class="live-badge"><div class="live-dot"></div> Live Data</div>
+</div>
+
+<!-- KPI Cards -->
+<div class="kpi-grid">
+  <div class="kpi-card green">
+    <div class="kpi-icon">📦</div>
+    <div class="kpi-label">Total Orders Analysed</div>
+    <div class="kpi-value" id="kpi-orders">—</div>
+    <div class="kpi-sub">real shipping records</div>
+    <span class="kpi-badge badge-green" id="kpi-orders-badge">—</span>
+  </div>
+  <div class="kpi-card amber">
+    <div class="kpi-icon">🌍</div>
+    <div class="kpi-label">Total CO₂ Tracked</div>
+    <div class="kpi-value" id="kpi-co2">—</div>
+    <div class="kpi-sub">kg CO₂ across all orders</div>
+    <span class="kpi-badge badge-amber" id="kpi-co2-badge">—</span>
+  </div>
+  <div class="kpi-card green">
+    <div class="kpi-icon">♻️</div>
+    <div class="kpi-label">Biodegradable Materials</div>
+    <div class="kpi-value" id="kpi-bio">—</div>
+    <div class="kpi-sub">of 600 total materials</div>
+    <span class="kpi-badge badge-green" id="kpi-bio-badge">—</span>
+  </div>
+  <div class="kpi-card blue">
+    <div class="kpi-icon">💰</div>
+    <div class="kpi-label">Avg Packaging Cost</div>
+    <div class="kpi-value" id="kpi-cost">—</div>
+    <div class="kpi-sub">per order</div>
+    <span class="kpi-badge badge-green" id="kpi-saving-badge">—</span>
+  </div>
+</div>
+
+<!-- Row 1: CO2 Trend + Packaging Doughnut -->
+<div class="charts-grid">
+  <div class="chart-card">
+    <h3>📈 Monthly CO₂ Emissions Trend</h3>
+    <p>Total CO₂ emitted per month across all shipping orders</p>
+    <div class="chart-wrap tall"><canvas id="co2TrendChart"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <h3>📦 Packaging Usage Share</h3>
+    <p>Distribution of packaging materials used in real orders</p>
+    <div class="chart-wrap tall"><canvas id="pkgDoughnut"></canvas></div>
+  </div>
+</div>
+
+<!-- Row 2: Category CO2 + Shipping Mode -->
+<div class="charts-row">
+  <div class="chart-card">
+    <h3>🏷️ CO₂ by Product Category</h3>
+    <p>Average CO₂ emission per order by product type</p>
+    <div class="chart-wrap"><canvas id="categoryChart"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <h3>✈️ Air vs Road Shipping Impact</h3>
+    <p>Cost and emissions comparison by shipping mode</p>
+    <div class="chart-wrap"><canvas id="shippingChart"></canvas></div>
+  </div>
+</div>
+
+<!-- Bottom: Top materials + Packaging performance -->
+<div class="bottom-section">
+  <div class="table-card">
+    <h3>🏆 Top 10 Eco Materials</h3>
+    <table class="eco-table">
+      <thead><tr><th>Rank</th><th>Material</th><th>Category</th><th>Grade</th><th>Score</th></tr></thead>
+      <tbody id="top-materials-body"><tr><td colspan="5" class="loading">Loading...</td></tr></tbody>
+    </table>
+  </div>
+  <div class="table-card">
+    <h3>📊 Packaging Performance (Real Orders)</h3>
+    <table class="eco-table">
+      <thead><tr><th>Packaging</th><th>Orders</th><th>Avg CO₂</th><th>Avg Cost</th></tr></thead>
+      <tbody id="pkg-perf-body"><tr><td colspan="4" class="loading">Loading...</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<footer>
+  <strong>EcoPackAI</strong> — BI Dashboard · 15,000 Real Orders · 600 Materials · Random Forest + XGBoost Models
+</footer>
+
+<script>
+const COLORS = ['#1a7a52','#a8e063','#4ba57a','#0f4c35','#6bb88a','#c8f08a','#2d9b67','#84cc82','#38a169','#b7eb8f'];
+const CO2_COLORS = ['#ef4444','#f59e0b','#3b82f6','#8b5cf6','#06b6d4'];
+
+async function loadDashboard() {
+  const [stats, co2Trend, pkgUsage, catStats, shipStats, topMats] = await Promise.all([
+    fetch('/api/stats').then(r=>r.json()),
+    fetch('/api/co2_trend').then(r=>r.json()),
+    fetch('/api/packaging_usage').then(r=>r.json()),
+    fetch('/api/category_stats').then(r=>r.json()),
+    fetch('/api/shipping_stats').then(r=>r.json()),
+    fetch('/api/top_materials?n=10').then(r=>r.json()),
+  ]);
+
+  renderKPIs(stats);
+  renderCO2Trend(co2Trend);
+  renderPkgDoughnut(pkgUsage);
+  renderCategoryChart(catStats);
+  renderShippingChart(shipStats);
+  renderTopMaterials(topMats);
+  renderPkgPerf(pkgUsage);
+}
+
+function renderKPIs(d) {
+  document.getElementById('kpi-orders').textContent = d.total_orders.toLocaleString();
+  document.getElementById('kpi-orders-badge').textContent = '5 product categories';
+  document.getElementById('kpi-co2').textContent = (d.total_co2_kg/1000).toFixed(1) + 't';
+  document.getElementById('kpi-co2-badge').textContent = d.potential_co2_saving_pct + '% reducible';
+  document.getElementById('kpi-bio').textContent = d.biodegradable_count;
+  document.getElementById('kpi-bio-badge').textContent = d.biodegradable_pct + '% biodegradable';
+  document.getElementById('kpi-cost').textContent = '$' + d.avg_cost_usd.toFixed(2);
+  document.getElementById('kpi-saving-badge').textContent = d.model_accuracy_pct + '% model accuracy';
+}
+
+function renderCO2Trend(data) {
+  const ctx = document.getElementById('co2TrendChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: data.map(d=>d.month_year),
+      datasets: [{
+        label: 'Total CO₂ (kg)',
+        data: data.map(d=>d.total_co2),
+        borderColor: '#1a7a52', backgroundColor: 'rgba(26,122,82,0.08)',
+        borderWidth: 2.5, fill: true, tension: 0.4,
+        pointBackgroundColor: '#1a7a52', pointRadius: 3,
+      },{
+        label: 'Avg CO₂ per order',
+        data: data.map(d=>d.avg_co2),
+        borderColor: '#a8e063', backgroundColor: 'transparent',
+        borderWidth: 2, tension: 0.4, borderDash: [5,3],
+        yAxisID: 'y2', pointRadius: 2,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'top', labels: { font: { family: 'DM Sans', size: 11 } } } },
+      scales: {
+        y: { grid: { color: '#f0ede6' }, ticks: { font: { family: 'DM Sans', size: 10 } } },
+        y2: { position: 'right', grid: { display: false }, ticks: { font: { family: 'DM Sans', size: 10 } } },
+        x: { grid: { display: false }, ticks: { font: { family: 'DM Sans', size: 9 }, maxRotation: 45 } }
+      }
+    }
+  });
+}
+
+function renderPkgDoughnut(data) {
+  const ctx = document.getElementById('pkgDoughnut').getContext('2d');
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: data.map(d=>d.Packaging_Used),
+      datasets: [{ data: data.map(d=>d.order_count), backgroundColor: COLORS, borderWidth: 2, borderColor: '#faf8f3' }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { family: 'DM Sans', size: 10 }, padding: 8 } },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed.toLocaleString()} orders` } }
+      },
+      cutout: '62%',
+    }
+  });
+}
+
+function renderCategoryChart(data) {
+  const ctx = document.getElementById('categoryChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: data.map(d=>d.Category),
+      datasets: [{
+        label: 'Avg CO₂ (kg)',
+        data: data.map(d=>d.avg_co2),
+        backgroundColor: COLORS.slice(0,5),
+        borderRadius: 8, borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { grid: { color: '#f0ede6' }, ticks: { font: { family: 'DM Sans', size: 10 } } },
+        x: { grid: { display: false }, ticks: { font: { family: 'DM Sans', size: 10 } } }
+      }
+    }
+  });
+}
+
+function renderShippingChart(data) {
+  const ctx = document.getElementById('shippingChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: data.map(d=>d.Shipping_Mode),
+      datasets: [
+        { label: 'Avg CO₂ (kg)', data: data.map(d=>d.avg_co2), backgroundColor: ['#ef4444','#3b82f6'], borderRadius: 8, borderSkipped: false },
+        { label: 'Avg Cost ($)', data: data.map(d=>d.avg_cost), backgroundColor: ['#fca5a5','#93c5fd'], borderRadius: 8, borderSkipped: false }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'top', labels: { font: { family: 'DM Sans', size: 11 } } } },
+      scales: {
+        y: { grid: { color: '#f0ede6' }, ticks: { font: { family: 'DM Sans', size: 10 } } },
+        x: { grid: { display: false }, ticks: { font: { family: 'DM Sans', size: 11 } } }
+      }
+    }
+  });
+}
+
+function renderTopMaterials(data) {
+  const tbody = document.getElementById('top-materials-body');
+  tbody.innerHTML = data.map(m => `
+    <tr>
+      <td><strong style="color:var(--forest)">${m.sustainability_rank}</strong></td>
+      <td style="font-size:0.8rem">${m.Material_Name}</td>
+      <td><span style="font-size:0.75rem;color:var(--muted)">${m.Category}</span></td>
+      <td><span class="grade-chip grade-${m.eco_grade}">${m.eco_grade}</span></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:0.4rem">
+          <span style="font-size:0.8rem;font-weight:600;color:var(--forest)">${(m.material_suitability_score*100).toFixed(0)}%</span>
+          <div class="progress-bar" style="width:60px"><div class="progress-fill" style="width:${m.material_suitability_score*100}%"></div></div>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function renderPkgPerf(data) {
+  const tbody = document.getElementById('pkg-perf-body');
+  tbody.innerHTML = data.map(p => `
+    <tr>
+      <td style="font-size:0.8rem;font-weight:500">${p.Packaging_Used}</td>
+      <td>${p.order_count.toLocaleString()}</td>
+      <td style="color:${p.avg_co2 > 20 ? '#ef4444' : '#1a7a52'};font-weight:600">${p.avg_co2.toFixed(1)} kg</td>
+      <td>$${p.avg_cost.toFixed(2)}</td>
+    </tr>
+  `).join('');
+}
+
+loadDashboard();
+</script>
+</body>
+</html>
