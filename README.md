@@ -163,35 +163,7 @@ curl -X POST http://localhost:5000/api/recommend \
 
 ---
 
-## 🚀 Deploy to Heroku
 
-```bash
-# Install Heroku CLI, then:
-heroku login
-heroku create ecopackai-yourname
-git push heroku main
-heroku config:set DB_HOST=your-db-host DB_NAME=ecopackai ...
-heroku open
-```
-
----
-
-## 🐘 PostgreSQL Setup (Optional)
-
-```bash
-# Create database
-createdb ecopackai
-
-# Apply schema
-psql -d ecopackai -f database/schema.sql
-
-# Set env vars
-export DB_HOST=localhost
-export DB_PORT=5432
-export DB_NAME=ecopackai
-export DB_USER=postgres
-export DB_PASSWORD=yourpassword
-```
 
 The app runs in **offline mode** (CSV only) if no DB is configured.
 
